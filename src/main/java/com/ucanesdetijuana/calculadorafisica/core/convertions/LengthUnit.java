@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.ucanesdetijuana.calculadorafisica.core.convertions;
 
 /**
@@ -10,6 +6,7 @@ package com.ucanesdetijuana.calculadorafisica.core.convertions;
  * Clase que convierte valores de tipo Longitud (Lenght)
  */
 public enum LengthUnit implements UnitMetric {
+    
     METRO(1.0, "Metro", "m"),
     KILOMETRO(1000.0, "Kilómetro", "km");
     
@@ -38,5 +35,10 @@ public enum LengthUnit implements UnitMetric {
     public double fromBaseTo(double unitValue) {
         return unitValue / baseFactor;
     }
+
+    @Override
+    public ConverterFactory.MagnitudeType getMagnitudeType() { return ConverterFactory.MagnitudeType.LENGHT; }
     
+    @Override
+    public String toString () {return getSymbol(); }
 }

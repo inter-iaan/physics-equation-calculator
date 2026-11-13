@@ -7,12 +7,13 @@ package com.ucanesdetijuana.calculadorafisica.core.convertions;
  */
 public class ConverterFactory {
     public enum MagnitudeType {
-        LENGHT
+        LENGHT, TIME
     }
     
     public static UnitMetric[] getAllUnits (MagnitudeType type) {
         return switch (type) {
             case LENGHT -> LengthUnit.values();
+            case TIME -> TimeUnit.values();
         };
     }
     

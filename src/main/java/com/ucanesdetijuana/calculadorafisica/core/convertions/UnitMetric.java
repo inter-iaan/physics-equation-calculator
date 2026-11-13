@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
- */
 package com.ucanesdetijuana.calculadorafisica.core.convertions;
 
 /**
@@ -22,6 +18,8 @@ public interface UnitMetric {
      * @return Símbolo de la unidad
      */
     String getSymbol();
+    
+    ConverterFactory.MagnitudeType getMagnitudeType();
     
     /**
      * Convierte el valor dado a la unidad base de la magnitud

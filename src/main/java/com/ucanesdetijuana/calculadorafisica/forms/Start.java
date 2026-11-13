@@ -1,6 +1,5 @@
 package com.ucanesdetijuana.calculadorafisica.forms;
 
-import com.ucanesdetijuana.calculadorafisica.core.logic.EcuationViewModel;
 import com.ucanesdetijuana.calculadorafisica.modules.MRU;
 
 /**

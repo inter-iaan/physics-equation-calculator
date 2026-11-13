@@ -3,7 +3,6 @@ package com.ucanesdetijuana.calculadorafisica.forms;
 import com.ucanesdetijuana.calculadorafisica.core.convertions.ConverterFactory;
 import com.ucanesdetijuana.calculadorafisica.core.convertions.FractionalUnit;
 import com.ucanesdetijuana.calculadorafisica.core.convertions.UnitMetric;
-import com.ucanesdetijuana.calculadorafisica.core.logic.EcuationViewModel;
 import com.ucanesdetijuana.calculadorafisica.core.logic.Variable;
 import java.awt.BorderLayout;
 import java.awt.Color;

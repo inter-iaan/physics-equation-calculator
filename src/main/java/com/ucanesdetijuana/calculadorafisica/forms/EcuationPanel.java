@@ -2,7 +2,6 @@ package com.ucanesdetijuana.calculadorafisica.forms;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
-import com.ucanesdetijuana.calculadorafisica.core.logic.EcuationViewModel;
 import com.ucanesdetijuana.calculadorafisica.core.logic.Variable;
 import java.awt.Color;
 import java.awt.GridBagConstraints;

@@ -3,6 +3,7 @@ package com.ucanesdetijuana.calculadorafisica.forms;
 import com.ucanesdetijuana.calculadorafisica.core.convertions.ConverterFactory;
 import com.ucanesdetijuana.calculadorafisica.core.convertions.FractionalUnit;
 import com.ucanesdetijuana.calculadorafisica.core.convertions.UnitMetric;
+import com.ucanesdetijuana.calculadorafisica.core.logic.Ecuation;
 import com.ucanesdetijuana.calculadorafisica.core.logic.Variable;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -33,6 +34,7 @@ public class Writer extends javax.swing.JDialog {
 
     private EcuationViewModel model;
     private final List<Writer.FormRelation> variableList = new ArrayList();
+    private final CalculateEvent calcEvt = new CalculateEvent();
     
     private record FormRelation(Variable variable, JTextField field, JLabel errorLabel) {
         public void showErr() { errorLabel.setVisible(true); }
@@ -60,6 +62,10 @@ public class Writer extends javax.swing.JDialog {
         this.setResizable(false);
         
         this.setLocationRelativeTo(parent);
+    }
+    
+    public void addCalculateListener (CalculateListener listener) {
+        calcEvt.addListener(listener);
     }
     
     private void processFractional (JPanel localVariable, FractionalUnit fracUnit) {
@@ -186,13 +192,17 @@ public class Writer extends javax.swing.JDialog {
             }
 
             if (emptyCount == 1 && emptyContent != null) {
+                Ecuation preCalc = this.model.getEcuation();
+                
+                
                 double result = emptyContent.variable.calculate();
                 emptyContent.variable.setValue(result);
-                emptyContent.field.setText(String.valueOf(result));
 
                 List<String> latex = emptyContent.variable.getProcedureSteps();
                 
-                System.out.println("TODO!!!!: MANDAR A LLAMAR A UN EVENTO PARA QUE RENDERICE EL CONTENIDO: // procedures.renderProcedure(latex);");                
+                calcEvt.fireContent(latex, preCalc);
+                
+                this.dispose();
             } else if (emptyCount > 1) {
                 for (Writer.FormRelation relation : variableList) {
                     if (relation.field.getText().trim().isBlank()) {

@@ -2,9 +2,11 @@ package com.ucanesdetijuana.calculadorafisica.forms;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import com.ucanesdetijuana.calculadorafisica.core.logic.Ecuation;
 import com.ucanesdetijuana.calculadorafisica.core.logic.Variable;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
+import java.awt.Insets;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
@@ -22,6 +24,7 @@ public final class EcuationPanel extends javax.swing.JPanel {
 
     private final EcuationViewModel model;
     private final ProcedurePanel procedures;
+    private final ProcedurePanel result;
     
     /**
      * Crea la instancia del panel
@@ -30,6 +33,7 @@ public final class EcuationPanel extends javax.swing.JPanel {
     public EcuationPanel(EcuationViewModel model) {
         this.model = model;
         this.procedures = new ProcedurePanel();
+        this.result = new ProcedurePanel();
         
         initComponents();
         
@@ -42,8 +46,36 @@ public final class EcuationPanel extends javax.swing.JPanel {
         
         onCreateVariables(VariablesPanel);
         onCreateFormulas(Formulas);
+        onCreateProcedures(Procedure);
+        onCreateResult(Result);
     }
     
+    private void renderModelOn (JPanel localVariables, Ecuation ec) {
+        localVariables.setLayout(new BoxLayout(localVariables, BoxLayout.Y_AXIS));
+        localVariables.removeAll();
+        
+        for (Variable variable : ec.getVariables()) {
+            Variable last = ec.getVariables().getLast();
+            String valueText = (variable.getValue() == null) 
+                ? "?" 
+                : variable.getValue() + " " + variable.getUnit().getSymbol();
+
+            TeXFormula nameFormula = new TeXFormula(
+                "\\text{" + variable.getName() + " } (" + variable.getAbreviation() + ") = " + valueText
+            );
+            
+            TeXIcon icon = nameFormula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 16);
+                        
+            JLabel label = new JLabel();
+            label.setIcon(icon);
+            
+            localVariables.add(label);
+            if (variable != last) localVariables.add(Box.createVerticalStrut(10));
+        } 
+        
+        this.revalidate();
+        this.repaint();
+    }
     
     /**
      * Obtiene la fórmula contenida en la ecuación para mostrarla en la interfaz gráfica
@@ -82,26 +114,50 @@ public final class EcuationPanel extends javax.swing.JPanel {
     public void onCreateVariables (JPanel panel) {
         JPanel localVariables = new JPanel();
         localVariables.setLayout(new BoxLayout(localVariables, BoxLayout.Y_AXIS));
-        for (Variable variable : model.getEcuation().getVariables()) {
-            Variable last = model.getEcuation().getVariables().getLast();
-            String valueText = (variable.getValue() == null) 
-                ? "?" 
-                : variable.getValue() + " " + variable.getUnit().getSymbol();
-
-            TeXFormula nameFormula = new TeXFormula(
-                "\\text{" + variable.getName() + " } (" + variable.getAbreviation() + ") = " + valueText
-            );
-            
-            TeXIcon icon = nameFormula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 16);
-                        
-            JLabel label = new JLabel();
-            label.setIcon(icon);
-            
-            localVariables.add(label);
-            if (variable != last) localVariables.add(Box.createVerticalStrut(10));
-        }        
-        
+        renderModelOn(localVariables, model.getEcuation());
         panel.add(localVariables);
+    }
+    
+    /**
+     * Crea el contenedor necesario para poder renderizar el contenido LaTeX en la interfaz gráfica
+     * @param panel JPanel que va a contener la información renderizada
+     * @implNote El parámetro panel debe contener estrictamente un GridBayLayout
+     */
+    public void onCreateProcedures (JPanel panel) {
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.anchor = GridBagConstraints.BASELINE;
+        
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        
+        gbc.insets = new Insets(10, 20, 0, 0);
+        
+        panel.add(procedures, gbc);
+    }
+    
+    /**
+     * Crea el contenedor necesario para poder renderizar el contenido LaTeX en la interfaz gráfica, pero enseñando únicamente el resultado final
+     * @param panel JPanel que va a contener la información renderizada
+     * @implNote El parámetro panel debe contener estrictamente un GridBayLayout
+     */
+    public void onCreateResult (JPanel panel) {
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.anchor = GridBagConstraints.BASELINE;
+        
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        
+        gbc.insets = new Insets(10, 20, 0, 0);
+        
+        panel.add(result, gbc);
     }
     
     /**
@@ -234,7 +290,6 @@ public final class EcuationPanel extends javax.swing.JPanel {
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.BASELINE;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(10, 20, 0, 0);
         Procedure.add(jLabel1, gridBagConstraints);
 
@@ -270,6 +325,13 @@ public final class EcuationPanel extends javax.swing.JPanel {
 
     private void EditDataMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_EditDataMouseClicked
         Writer w = new Writer(null, true, model);
+        
+        w.addCalculateListener((latex, ec) -> {
+            procedures.renderProcedure(latex);
+            result.renderProcedure(latex.getLast());
+            renderModelOn(VariablesPanel, ec);
+        });
+        
         w.setVisible(true);
     }//GEN-LAST:event_EditDataMouseClicked
 

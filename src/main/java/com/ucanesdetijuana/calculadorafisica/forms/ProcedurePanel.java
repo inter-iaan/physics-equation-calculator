@@ -37,4 +37,27 @@ public class ProcedurePanel extends JPanel {
         this.revalidate();
         this.repaint();
     }
+    
+    public void renderProcedure(String latex) {
+        this.removeAll();
+
+        try {
+            TeXFormula formula = new TeXFormula(latex);
+            TeXIcon icon = formula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 18);
+
+            JLabel stepLabel = new JLabel(icon);
+            stepLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+            stepLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+            this.add(stepLabel);
+        } catch (Exception e) {
+            JLabel errLabel = new JLabel("Error al renderizar: " + latex);
+            errLabel.setForeground(Color.RED);
+            this.add(errLabel);
+        }
+        
+
+        this.revalidate();
+        this.repaint();
+    }
 }

@@ -7,13 +7,15 @@ package com.ucanesdetijuana.calculadorafisica.core.convertions;
  */
 public class ConverterFactory {
     public enum MagnitudeType {
-        LENGHT, TIME
+        LENGHT, TIME, DIMENSIONLESS, ANGLE
     }
     
     public static UnitMetric[] getAllUnits (MagnitudeType type) {
         return switch (type) {
             case LENGHT -> LengthUnit.values();
             case TIME -> TimeUnit.values();
+            case DIMENSIONLESS -> new UnitMetric[]{new DimensionlessUnit()};
+            case ANGLE -> AngleUnit.values();
         };
     }
     

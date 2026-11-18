@@ -13,13 +13,15 @@ public abstract class Variable implements Calculator {
     private final String abr;
     private Double value;
     private UnitMetric unit;
-    private List<String> procedureSteps = new ArrayList();
+    private final List<String> procedureSteps = new ArrayList();
+    private boolean isTarget;
 
     public Variable(String name, String abr, Double value, UnitMetric unit) {
         this.name = name;
         this.abr = abr;
         this.value = value;
         this.unit = unit;
+        isTarget = false;
     }
 
     @Override
@@ -41,7 +43,9 @@ public abstract class Variable implements Calculator {
     public String getAbreviation() { return abr; }
     public UnitMetric getUnit() { return unit; }
     public Double getValue() { return value; }
+    public boolean getTarget () { return isTarget;}
     
     public void setValue (Double value) { this.value = value; }
     public void setUnit (UnitMetric unit) { this.unit = unit; }
+    public void setTarget (boolean t) { isTarget = t; }
 }

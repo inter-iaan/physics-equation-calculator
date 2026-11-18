@@ -179,6 +179,7 @@ public class Writer extends javax.swing.JDialog {
                     try {
                         double val = Double.parseDouble(content);
                         relation.variable.setValue(val);
+                        relation.variable.setTarget(false);
                     } catch (NumberFormatException exception) {
                         relation.showErr();
                         hasErrors = true;
@@ -192,15 +193,13 @@ public class Writer extends javax.swing.JDialog {
             }
 
             if (emptyCount == 1 && emptyContent != null) {
-                Ecuation preCalc = this.model.getEcuation();
-                
-                
                 double result = emptyContent.variable.calculate();
                 emptyContent.variable.setValue(result);
+                emptyContent.variable.setTarget(true);
 
                 List<String> latex = emptyContent.variable.getProcedureSteps();
                 
-                calcEvt.fireContent(latex, preCalc);
+                calcEvt.fireContent(latex);
                 
                 this.dispose();
             } else if (emptyCount > 1) {

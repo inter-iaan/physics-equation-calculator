@@ -12,9 +12,7 @@ public class DimensionlessUnit implements UnitMetric{
     }
 
     @Override
-    public String getSymbol() {
-        return "1";
-    }
+    public String getSymbol() { return ""; }
 
     @Override
     public ConverterFactory.MagnitudeType getMagnitudeType() {

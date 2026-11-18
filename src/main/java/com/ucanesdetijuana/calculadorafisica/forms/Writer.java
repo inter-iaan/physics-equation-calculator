@@ -17,6 +17,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import org.scilab.forge.jlatexmath.TeXConstants;
@@ -92,6 +93,12 @@ public class Writer extends javax.swing.JDialog {
         
         UnitMetric[] units = ConverterFactory.getAllUnits(unit.getMagnitudeType());
         JComboBox<UnitMetric> magnitudes = new JComboBox<>(new DefaultComboBoxModel<>(units));
+        
+        if (unit.getMagnitudeType() == ConverterFactory.MagnitudeType.DIMENSIONLESS) {
+            magnitudes.setEnabled(false);
+            magnitudes.setToolTipText("Esta es una magnitud adimensional, lo que significa que solo tiene un valor básico.");
+        }
+        
         magnitudes.setPreferredSize(new Dimension(50,25));
         magnitudes.setSelectedItem(unit);
 
@@ -194,15 +201,18 @@ public class Writer extends javax.swing.JDialog {
             if (emptyCount == 1 && emptyContent != null) {
                 Ecuation preCalc = this.model.getEcuation();
                 
-                
-                double result = emptyContent.variable.calculate();
-                emptyContent.variable.setValue(result);
+                try {
+                    double result = emptyContent.variable.calculate();
+                    emptyContent.variable.setValue(result);
 
-                List<String> latex = emptyContent.variable.getProcedureSteps();
+                    List<String> latex = emptyContent.variable.getProcedureSteps();
                 
-                calcEvt.fireContent(latex, preCalc);
-                
-                this.dispose();
+                    calcEvt.fireContent(latex, preCalc);
+                    this.dispose();
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(this, e.getMessage(), "Advertencia - Cálculo Inválido", JOptionPane.WARNING_MESSAGE);
+                }
+
             } else if (emptyCount > 1) {
                 for (Writer.FormRelation relation : variableList) {
                     if (relation.field.getText().trim().isBlank()) {

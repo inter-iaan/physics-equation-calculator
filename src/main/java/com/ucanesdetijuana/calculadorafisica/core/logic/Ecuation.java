@@ -9,6 +9,7 @@ import java.util.ArrayList;
 public class Ecuation {
     private final String name;
     private final String latexFormula;
+    private String problemDescription = "";
     private final ArrayList<Variable> variables;
     
     /**
@@ -22,7 +23,7 @@ public class Ecuation {
         this.name = name;
         latexFormula = latex;
     }
-
+    
     public String getName() { return name; }
     public ArrayList<Variable> getVariables() { return variables; }
     public Variable getVariable(String name) {

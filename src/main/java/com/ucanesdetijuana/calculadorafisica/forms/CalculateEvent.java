@@ -15,9 +15,9 @@ public class CalculateEvent {
         listeners.add(l);
     }
     
-    public void fireContent (List<String> latex, Ecuation ec) {
+    public void fireContent (List<String> latex) {
         for (CalculateListener listener : listeners) {
-            listener.onCalculate(latex, ec);
+            listener.onCalculate(latex);
         }
     }
 }

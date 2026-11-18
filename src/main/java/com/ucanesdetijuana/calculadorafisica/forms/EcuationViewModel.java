@@ -12,21 +12,19 @@ public class EcuationViewModel {
     
     private Consumer<List<String>> onProcedureGenerated;
     
-    private Consumer<Map<String, String>> onResultCalculated; // <--- CORREGIDO AQUÍ
+    private Consumer<Map<String, String>> onResultCalculated;
     
-    // Callback para notificar errores en la UI (por ejemplo si faltan campos)
     private Consumer<List<String>> onErrorTriggered;
 
     public EcuationViewModel(Ecuation baseEcuation) {
         this.baseEcuation = baseEcuation;
     }
 
-    // Métodos para suscribir la Vista
     public void setOnProcedureGenerated(Consumer<List<String>> listener) {
         this.onProcedureGenerated = listener;
     }
 
-    public void setOnResultCalculated(Consumer<Map<String, String>> listener) { // <--- CORREGIDO AQUÍ
+    public void setOnResultCalculated(Consumer<Map<String, String>> listener) {
         this.onResultCalculated = listener;
     }
 
@@ -36,6 +34,7 @@ public class EcuationViewModel {
 
     /**
      * Procesa las entradas ingresadas en la UI (Mapa de nombreVariable -> textoDelCampo)
+     * @param inputs
      */
     public void processCalculation(Map<String, String> inputs) {
         String emptyVariableName = null;
@@ -59,7 +58,6 @@ public class EcuationViewModel {
             }
         }
 
-        // FASE 2: Validaciones
         if (hasParseError) {
             System.err.println("Hay campos con formato numérico inválido.");
             return;
@@ -68,25 +66,21 @@ public class EcuationViewModel {
         if (emptyCount == 1 && emptyVariableName != null) {
             Variable targetVar = baseEcuation.getVariable(emptyVariableName);
             
-            // FASE 3: Cálculo y emisión de evento
             double result = targetVar.calculate();
             targetVar.setValue(result);
 
-            // Notificar resultado a la Vista
             if (onResultCalculated != null) {
                 Map<String, String> resultMap = new HashMap<>();
                 resultMap.put(targetVar.getName(), String.valueOf(result));
                 onResultCalculated.accept(resultMap);
             }
 
-            // Notificar pasos LaTeX a la Vista
             if (onProcedureGenerated != null) {
                 onProcedureGenerated.accept(targetVar.getProcedureSteps());
             }
 
         } else if (emptyCount > 1) {
             if (onErrorTriggered != null) {
-                // Notifica qué campos están vacíos para marcarlos en rojo
                 onErrorTriggered.accept(inputs.entrySet().stream()
                         .filter(e -> e.getValue().trim().isBlank())
                         .map(Map.Entry::getKey)

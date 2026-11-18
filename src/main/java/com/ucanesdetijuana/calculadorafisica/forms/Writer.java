@@ -186,6 +186,7 @@ public class Writer extends javax.swing.JDialog {
                     try {
                         double val = Double.parseDouble(content);
                         relation.variable.setValue(val);
+                        relation.variable.setTarget(false);
                     } catch (NumberFormatException exception) {
                         relation.showErr();
                         hasErrors = true;
@@ -199,20 +200,15 @@ public class Writer extends javax.swing.JDialog {
             }
 
             if (emptyCount == 1 && emptyContent != null) {
-                Ecuation preCalc = this.model.getEcuation();
-                
-                try {
-                    double result = emptyContent.variable.calculate();
-                    emptyContent.variable.setValue(result);
+                double result = emptyContent.variable.calculate();
+                emptyContent.variable.setValue(result);
+                emptyContent.variable.setTarget(true);
 
                     List<String> latex = emptyContent.variable.getProcedureSteps();
                 
-                    calcEvt.fireContent(latex, preCalc);
-                    this.dispose();
-                } catch (Exception e) {
-                    JOptionPane.showMessageDialog(this, e.getMessage(), "Advertencia - Cálculo Inválido", JOptionPane.WARNING_MESSAGE);
-                }
-
+                calcEvt.fireContent(latex);
+                
+                this.dispose();
             } else if (emptyCount > 1) {
                 for (Writer.FormRelation relation : variableList) {
                     if (relation.field.getText().trim().isBlank()) {

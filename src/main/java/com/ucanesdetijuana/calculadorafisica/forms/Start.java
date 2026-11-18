@@ -2,6 +2,8 @@ package com.ucanesdetijuana.calculadorafisica.forms;
 
 import com.ucanesdetijuana.calculadorafisica.modules.MRU;
 import com.ucanesdetijuana.calculadorafisica.modules.Snell;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  * Ventana principal para la ejecución de la aplicación, contiene el título, subtítulo para créditos y el panel de visualización de contenido
@@ -54,6 +56,10 @@ public class Start extends javax.swing.JFrame {
         Title = new javax.swing.JLabel();
         EcuationTabbedPane = new javax.swing.JTabbedPane();
         CreditLabel = new javax.swing.JLabel();
+        EquationMenuBar = new javax.swing.JMenuBar();
+        File = new javax.swing.JMenu();
+        Open = new javax.swing.JMenuItem();
+        Save = new javax.swing.JMenuItem();
 
         Credits.setTitle("Créditos - Calculadora para Ecuaciones Físicas");
 
@@ -195,6 +201,23 @@ public class Start extends javax.swing.JFrame {
             }
         });
 
+        File.setText("Archivo");
+        File.addActionListener(this::FileActionPerformed);
+
+        Open.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        Open.setText("Abrir ecuación...");
+        Open.addActionListener(this::OpenActionPerformed);
+        File.add(Open);
+
+        Save.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        Save.setText("Guardar ecuación...");
+        Save.addActionListener(this::SaveActionPerformed);
+        File.add(Save);
+
+        EquationMenuBar.add(File);
+
+        setJMenuBar(EquationMenuBar);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -217,7 +240,7 @@ public class Start extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(CreditLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(EcuationTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 631, Short.MAX_VALUE)
+                .addComponent(EcuationTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 608, Short.MAX_VALUE)
                 .addGap(13, 13, 13))
         );
 
@@ -240,6 +263,36 @@ public class Start extends javax.swing.JFrame {
         Credits.setVisible(true);
         
     }//GEN-LAST:event_CreditLabelMouseClicked
+
+    private void FileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_FileActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_FileActionPerformed
+
+    private void OpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OpenActionPerformed
+        JFileChooser chooser = new JFileChooser();
+        chooser.setDialogTitle("Abrir ecuación...");
+        chooser.setAcceptAllFileFilterUsed(false);
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos de ecuación (*.equ)", "equ");
+        chooser.setFileFilter(filter);
+
+        int result = chooser.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            System.out.println("Archivo seleccionado!!");
+        }
+    }//GEN-LAST:event_OpenActionPerformed
+
+    private void SaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveActionPerformed
+        JFileChooser chooser = new JFileChooser();
+        chooser.setDialogTitle("Abrir ecuación...");
+        chooser.setAcceptAllFileFilterUsed(false);
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos de ecuación (*.equ)", "equ");
+        chooser.setFileFilter(filter);
+
+        int result = chooser.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            System.out.println("Archivo seleccionado!!");
+        }
+    }//GEN-LAST:event_SaveActionPerformed
 
     /**
      * @param args the command line arguments
@@ -270,6 +323,10 @@ public class Start extends javax.swing.JFrame {
     private javax.swing.JLabel CreditLabel;
     private javax.swing.JDialog Credits;
     private javax.swing.JTabbedPane EcuationTabbedPane;
+    private javax.swing.JMenuBar EquationMenuBar;
+    private javax.swing.JMenu File;
+    private javax.swing.JMenuItem Open;
+    private javax.swing.JMenuItem Save;
     private javax.swing.JLabel Title;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;

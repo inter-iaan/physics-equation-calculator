@@ -34,6 +34,8 @@ public class Ecuation {
         }
         return null;
     }
-
     public String getLatexFormula() { return latexFormula; }
+    public String getDescription() { return problemDescription; }
+    
+    public void setDescription(String desc) { problemDescription = desc; }
 }

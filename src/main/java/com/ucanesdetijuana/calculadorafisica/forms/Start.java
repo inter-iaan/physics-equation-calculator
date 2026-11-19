@@ -22,8 +22,8 @@ public class Start extends javax.swing.JFrame {
         EcuationViewModel mruViewModel = new EcuationViewModel(new MRU());
         EcuationViewModel snellViewModel = new EcuationViewModel(new Snell());
         
-        EcuationPanel mruPanel = new EcuationPanel(mruViewModel);
-        EcuationPanel snellPanel = new EcuationPanel(snellViewModel);
+        EcuationPanel mruPanel = new EcuationPanel(mruViewModel, this);
+        EcuationPanel snellPanel = new EcuationPanel(snellViewModel, this);
         
         EcuationTabbedPane.addTab(mruViewModel.getEcuation().getName(), mruPanel);
         EcuationTabbedPane.addTab(snellViewModel.getEcuation().getName(), snellPanel);

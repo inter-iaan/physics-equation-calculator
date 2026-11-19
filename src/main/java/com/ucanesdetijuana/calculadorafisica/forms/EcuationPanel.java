@@ -5,6 +5,7 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.ucanesdetijuana.calculadorafisica.core.logic.Ecuation;
 import com.ucanesdetijuana.calculadorafisica.core.logic.Variable;
 import java.awt.Color;
+import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import javax.swing.Box;
@@ -22,19 +23,20 @@ import org.scilab.forge.jlatexmath.TeXIcon;
  */
 public final class EcuationPanel extends javax.swing.JPanel {
 
-    private boolean isEditingProblemContent = false;
     private final EcuationViewModel model;
     private final ProcedurePanel procedures;
     private final ProcedurePanel result;
+    private final Frame parent;
     
     /**
      * Crea la instancia del panel
      * @param model Modelo de los datos a mostrar
      */
-    public EcuationPanel(EcuationViewModel model) {
+    public EcuationPanel(EcuationViewModel model, Frame parent) {
         this.model = model;
         this.procedures = new ProcedurePanel();
         this.result = new ProcedurePanel();
+        this.parent = parent;
         
         initComponents();
         
@@ -51,12 +53,6 @@ public final class EcuationPanel extends javax.swing.JPanel {
         onCreateResult(Result);
     }
     
-    /**
-     * Habilita la edición de texto para el contenido de un problema.
-     */
-    private void enableEditing () {
-        ProblemTextArea.setEditable(false);
-    }
     
     private void renderModelOn (JPanel localVariables, Ecuation ec) {
         localVariables.setLayout(new BoxLayout(localVariables, BoxLayout.Y_AXIS));
@@ -201,15 +197,24 @@ public final class EcuationPanel extends javax.swing.JPanel {
         EcuationName.setFont(new java.awt.Font("Segoe UI Variable", 1, 18)); // NOI18N
         EcuationName.setText(model.getEcuation().getName());
 
+        ProblemScrollPane.setVisible(!ProblemTextArea.getText().isEmpty());
         ProblemScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         ProblemScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 
         ProblemTextArea.setColumns(20);
+        ProblemTextArea.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         ProblemTextArea.setRows(5);
+        ProblemTextArea.setWrapStyleWord(true);
+        ProblemTextArea.setEnabled(false);
         ProblemScrollPane.setViewportView(ProblemTextArea);
 
-        EditData.putClientProperty(FlatClientProperties.BUTTON_TYPE, FlatClientProperties.BUTTON_TYPE_TOOLBAR_BUTTON);
-        EditProblemContent.setText("");
+        EditProblemContent.putClientProperty(FlatClientProperties.BUTTON_TYPE, FlatClientProperties.BUTTON_TYPE_TOOLBAR_BUTTON);
+        EditProblemContent.setToolTipText("Edita el contenido del problema...");
+        EditProblemContent.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                EditProblemContentMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout EquationDescriptionLayout = new javax.swing.GroupLayout(EquationDescription);
         EquationDescription.setLayout(EquationDescriptionLayout);
@@ -359,9 +364,7 @@ public final class EcuationPanel extends javax.swing.JPanel {
                     .addComponent(EcuationContent, javax.swing.GroupLayout.DEFAULT_SIZE, 1788, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(0, 0, 0)
-                                .addComponent(EquationDescription, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(EquationDescription, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(EcuationName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addContainerGap())))
         );
@@ -373,7 +376,7 @@ public final class EcuationPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(EquationDescription, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(14, 14, 14)
-                .addComponent(EcuationContent, javax.swing.GroupLayout.DEFAULT_SIZE, 552, Short.MAX_VALUE)
+                .addComponent(EcuationContent, javax.swing.GroupLayout.DEFAULT_SIZE, 568, Short.MAX_VALUE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -389,6 +392,26 @@ public final class EcuationPanel extends javax.swing.JPanel {
         
         w.setVisible(true);
     }//GEN-LAST:event_EditDataMouseClicked
+
+    private void EditProblemContentMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_EditProblemContentMouseClicked
+        ProblemWriter problemWriter = new ProblemWriter(null, true, model.getEcuation());                
+        
+        problemWriter.subscribe((content) -> {
+            this.model.getEcuation().setDescription(content);
+            
+            if (content.isBlank()) {
+                ProblemScrollPane.setVisible(false);
+            } else {
+                ProblemScrollPane.setVisible(true);
+                ProblemTextArea.setText(content);
+            }
+            
+            parent.revalidate();
+            parent.repaint();
+        });
+        
+        problemWriter.setVisible(true);
+    }//GEN-LAST:event_EditProblemContentMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

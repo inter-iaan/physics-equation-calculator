@@ -1,5 +1,7 @@
 package com.ucanesdetijuana.calculadorafisica.forms;
 
+import com.ucanesdetijuana.calculadorafisica.modules.MRU;
+import com.ucanesdetijuana.calculadorafisica.modules.SLNewton;
 import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;

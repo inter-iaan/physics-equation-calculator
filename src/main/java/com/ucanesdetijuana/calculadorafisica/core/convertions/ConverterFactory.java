@@ -1,13 +1,12 @@
 package com.ucanesdetijuana.calculadorafisica.core.convertions;
 
 /**
- *
  * @author José Alfredo Interián Polanco
  * Controla la instancia para la magnitud de conversión de forma automática
  */
 public class ConverterFactory {
     public enum MagnitudeType {
-        LENGHT, TIME, DIMENSIONLESS, ANGLE
+        LENGHT, TIME, MASS, FORCE, ACCELERATION, DIMENSIONLESS, ANGLE
     }
     
     public static UnitMetric[] getAllUnits (MagnitudeType type) {
@@ -16,6 +15,9 @@ public class ConverterFactory {
             case TIME -> TimeUnit.values();
             case DIMENSIONLESS -> new UnitMetric[]{new DimensionlessUnit()};
             case ANGLE -> AngleUnit.values();
+            case MASS -> MassUnit.values();
+            case FORCE -> ForceUnit.values();
+            case ACCELERATION -> AccelerationUnit.values();
         };
     }
     

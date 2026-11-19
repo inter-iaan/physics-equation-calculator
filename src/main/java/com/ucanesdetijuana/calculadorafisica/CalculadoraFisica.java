@@ -4,6 +4,7 @@ import com.formdev.flatlaf.FlatLightLaf;
 import com.ucanesdetijuana.calculadorafisica.forms.EcuationViewModel;
 import com.ucanesdetijuana.calculadorafisica.forms.Start;
 import com.ucanesdetijuana.calculadorafisica.modules.MRU;
+import com.ucanesdetijuana.calculadorafisica.modules.SLNewton;
 import com.ucanesdetijuana.calculadorafisica.modules.Snell;
 import java.util.ArrayList;
 
@@ -16,6 +17,7 @@ public class CalculadoraFisica {
         ArrayList<EcuationViewModel> models = new ArrayList<>();
         models.add(new EcuationViewModel(new MRU()));
         models.add(new EcuationViewModel(new Snell()));
+        models.add(new EcuationViewModel(new SLNewton()));
         
         FlatLightLaf.setup();        
         Start s = new Start(models);

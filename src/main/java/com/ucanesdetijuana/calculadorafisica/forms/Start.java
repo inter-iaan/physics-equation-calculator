@@ -1,6 +1,7 @@
 package com.ucanesdetijuana.calculadorafisica.forms;
 
 import com.ucanesdetijuana.calculadorafisica.modules.MRU;
+import com.ucanesdetijuana.calculadorafisica.modules.lentesConcavos;
 
 /**
  * Ventana principal para la ejecución de la aplicación, contiene el título, subtítulo para créditos y el panel de visualización de contenido
@@ -20,6 +21,13 @@ public class Start extends javax.swing.JFrame {
         
         EcuationPanel mruPanel = new EcuationPanel(mruViewModel);
         EcuationTabbedPane.addTab(mruViewModel.getEcuation().getName(), mruPanel);
+        
+        
+        EcuationViewModel lentesViewModel = new EcuationViewModel(new lentesConcavos());
+        
+        EcuationPanel lentesPanel = new EcuationPanel(lentesViewModel);
+        EcuationTabbedPane.addTab(lentesViewModel.getEcuation().getName(),lentesPanel);
+        
     }
 
     /**

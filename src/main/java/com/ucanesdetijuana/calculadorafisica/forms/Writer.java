@@ -22,7 +22,8 @@ import javax.swing.JTextField;
 import org.scilab.forge.jlatexmath.TeXConstants;
 import org.scilab.forge.jlatexmath.TeXFormula;
 import org.scilab.forge.jlatexmath.TeXIcon;
-
+import com.ucanesdetijuana.calculadorafisica.core.convertions.DimensionlessUnit;
+import javax.swing.JOptionPane;
 /**
  *
  * @author José Alfredo Interián Polanco
@@ -141,9 +142,9 @@ public class Writer extends javax.swing.JDialog {
 
             if (unit instanceof FractionalUnit fracUnit) {
                 processFractional(body, fracUnit);
-            } else {
-                processNormally(body, variable);
-            }
+            } else if (!(unit instanceof DimensionlessUnit)) {
+                        processNormally(body, variable);
+                    }
             
             localVariable.add(header, BorderLayout.NORTH);
             localVariable.add(body, BorderLayout.SOUTH);            
@@ -195,14 +196,28 @@ public class Writer extends javax.swing.JDialog {
                 Ecuation preCalc = this.model.getEcuation();
                 
                 
+                
+            try {
                 double result = emptyContent.variable.calculate();
+
                 emptyContent.variable.setValue(result);
 
                 List<String> latex = emptyContent.variable.getProcedureSteps();
-                
+
                 calcEvt.fireContent(latex, preCalc);
-                
+
                 this.dispose();
+
+            } catch (IllegalArgumentException | ArithmeticException exception) {
+
+                JOptionPane.showMessageDialog(
+                    this,
+                    exception.getMessage(),
+                    "Error en el cálculo",
+                    JOptionPane.ERROR_MESSAGE
+                );
+            }
+
             } else if (emptyCount > 1) {
                 for (Writer.FormRelation relation : variableList) {
                     if (relation.field.getText().trim().isBlank()) {

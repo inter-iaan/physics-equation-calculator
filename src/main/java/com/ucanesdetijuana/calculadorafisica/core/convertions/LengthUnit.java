@@ -8,7 +8,8 @@ package com.ucanesdetijuana.calculadorafisica.core.convertions;
 public enum LengthUnit implements UnitMetric {
     
     METRO(1.0, "Metro", "m"),
-    KILOMETRO(1000.0, "Kilómetro", "km");
+    KILOMETRO(1000.0, "Kilómetro", "km"),
+    CENTIMETRO(0.01, "Centímetro", "cm");
     
     private final double baseFactor;
     private final String name;

@@ -4,7 +4,7 @@ package com.ucanesdetijuana.calculadorafisica.core.convertions;
  *
  * @author Emanuel Alejandro Juárez López
  */
-public class DimensionlessUnit implements UnitMetric{
+public class DimensionlessUnit implements UnitMetric {
 
     @Override
     public String getName() {

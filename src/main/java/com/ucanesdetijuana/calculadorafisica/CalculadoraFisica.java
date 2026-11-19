@@ -3,6 +3,7 @@ package com.ucanesdetijuana.calculadorafisica;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.ucanesdetijuana.calculadorafisica.forms.EcuationViewModel;
 import com.ucanesdetijuana.calculadorafisica.forms.Start;
+import com.ucanesdetijuana.calculadorafisica.modules.LentesConcavos;
 import com.ucanesdetijuana.calculadorafisica.modules.MRU;
 import com.ucanesdetijuana.calculadorafisica.modules.SLNewton;
 import com.ucanesdetijuana.calculadorafisica.modules.Snell;
@@ -18,6 +19,7 @@ public class CalculadoraFisica {
         models.add(new EcuationViewModel(new MRU()));
         models.add(new EcuationViewModel(new Snell()));
         models.add(new EcuationViewModel(new SLNewton()));
+        models.add(new EcuationViewModel (new LentesConcavos()));
         
         FlatLightLaf.setup();        
         Start s = new Start(models);

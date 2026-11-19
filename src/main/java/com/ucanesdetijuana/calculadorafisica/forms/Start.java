@@ -1,7 +1,6 @@
 package com.ucanesdetijuana.calculadorafisica.forms;
 
-import com.ucanesdetijuana.calculadorafisica.modules.MRU;
-import com.ucanesdetijuana.calculadorafisica.modules.Snell;
+import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -10,23 +9,20 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  * @author José Alfredo Interián Polanco
  */
 public class Start extends javax.swing.JFrame {
-    
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Start.class.getName());
+    List<EcuationViewModel> equationModels;
 
     /**
      * Inicia en este método todos los tipos de ecuaciones que se deban mostrar, inicialízala con un EcuationViewModel y pásale como parámetro la instancia heredada.
+     * @param models Lista de ViewModels a cargar como pestañas
      */
-    public Start() {
+    public Start(List<EcuationViewModel> models) {
         initComponents();
+        equationModels = models;
         
-        EcuationViewModel mruViewModel = new EcuationViewModel(new MRU());
-        EcuationViewModel snellViewModel = new EcuationViewModel(new Snell());
-        
-        EcuationPanel mruPanel = new EcuationPanel(mruViewModel, this);
-        EcuationPanel snellPanel = new EcuationPanel(snellViewModel, this);
-        
-        EcuationTabbedPane.addTab(mruViewModel.getEcuation().getName(), mruPanel);
-        EcuationTabbedPane.addTab(snellViewModel.getEcuation().getName(), snellPanel);
+        equationModels.forEach((model) -> {
+            EcuationTabbedPane.addTab(model.getEcuation().getName(), new EcuationPanel(model, this));
+        });
     }
 
     /**
@@ -293,31 +289,6 @@ public class Start extends javax.swing.JFrame {
             System.out.println("Archivo seleccionado!!");
         }
     }//GEN-LAST:event_SaveActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new Start().setVisible(true));
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel CreditLabel;

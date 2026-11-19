@@ -1,6 +1,7 @@
 package com.ucanesdetijuana.calculadorafisica.forms;
 
 import com.ucanesdetijuana.calculadorafisica.modules.MRU;
+import com.ucanesdetijuana.calculadorafisica.modules.SLNewton;
 
 /**
  * Ventana principal para la ejecución de la aplicación, contiene el título, subtítulo para créditos y el panel de visualización de contenido
@@ -17,9 +18,13 @@ public class Start extends javax.swing.JFrame {
         initComponents();
         
         EcuationViewModel mruViewModel = new EcuationViewModel(new MRU());
+        EcuationViewModel newtonVM = new EcuationViewModel (new SLNewton());
         
         EcuationPanel mruPanel = new EcuationPanel(mruViewModel);
+        EcuationPanel newtonPanel = new EcuationPanel(newtonVM);
+        
         EcuationTabbedPane.addTab(mruViewModel.getEcuation().getName(), mruPanel);
+        EcuationTabbedPane.addTab(newtonVM.getEcuation().getName(), newtonPanel);
     }
 
     /**

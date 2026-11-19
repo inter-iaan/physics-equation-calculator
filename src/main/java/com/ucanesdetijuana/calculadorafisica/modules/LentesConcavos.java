@@ -1,3 +1,4 @@
+
 package com.ucanesdetijuana.calculadorafisica.modules;
 
 import com.ucanesdetijuana.calculadorafisica.core.convertions.DimensionlessUnit;
@@ -10,12 +11,11 @@ public class LentesConcavos extends Ecuation {
 
     public LentesConcavos() {
         super(
-            "Lentes Cóncavos",
+            "Lentes cóncavos",
             "\\frac{1}{f}=(n-1)\\left(\\frac{1}{R_1}-\\frac{1}{R_2}\\right)",
             new ArrayList<>()
         );
 
-        // Distancia focal
         getVariables().add(new Variable(
             "Distancia focal", "f", null, LengthUnit.METRO
         ) {
@@ -42,7 +42,6 @@ public class LentesConcavos extends Ecuation {
             }
         });
 
-        // Índice de refracción
         getVariables().add(new Variable(
             "Índice de refracción", "n", null, new DimensionlessUnit()
         ) {
@@ -69,7 +68,6 @@ public class LentesConcavos extends Ecuation {
             }
         });
 
-        // Radio de curvatura R1
         getVariables().add(new Variable(
             "Radio de curvatura 1", "R_1", null, LengthUnit.METRO
         ) {
@@ -99,7 +97,6 @@ public class LentesConcavos extends Ecuation {
             }
         });
 
-        // Radio de curvatura R2
         getVariables().add(new Variable(
             "Radio de curvatura 2", "R_2", null, LengthUnit.METRO
         ) {

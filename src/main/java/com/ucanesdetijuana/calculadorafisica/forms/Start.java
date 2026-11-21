@@ -466,6 +466,7 @@ public class Start extends javax.swing.JFrame {
         }
         
         this.dispose();
+        System.exit(0);
     }//GEN-LAST:event_formWindowClosing
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

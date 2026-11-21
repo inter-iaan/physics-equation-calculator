@@ -3,7 +3,6 @@ package com.ucanesdetijuana.calculadorafisica.forms;
 import com.ucanesdetijuana.calculadorafisica.core.convertions.ConverterFactory;
 import com.ucanesdetijuana.calculadorafisica.core.convertions.FractionalUnit;
 import com.ucanesdetijuana.calculadorafisica.core.convertions.UnitMetric;
-import com.ucanesdetijuana.calculadorafisica.core.logic.Ecuation;
 import com.ucanesdetijuana.calculadorafisica.core.logic.Variable;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -17,7 +16,6 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import org.scilab.forge.jlatexmath.TeXConstants;
@@ -201,31 +199,27 @@ public class Writer extends javax.swing.JDialog {
             }
 
             if (emptyCount == 1 && emptyContent != null) {
-                Ecuation preCalc = this.model.getEcuation();
-                
-                
-                
-            try {
-                double result = emptyContent.variable.calculate();
+                try {
+                    double result = emptyContent.variable.calculate();
 
-                emptyContent.variable.setValue(result);
-                emptyContent.variable.setTarget(true);
+                    emptyContent.variable.setValue(result);
+                    emptyContent.variable.setTarget(true);
 
-                List<String> latex = emptyContent.variable.getProcedureSteps();
+                    List<String> latex = emptyContent.variable.getProcedureSteps();
 
-                calcEvt.fireContent(latex);
+                    calcEvt.fireContent(latex);
 
-                this.dispose();
+                    this.dispose();
 
-            } catch (IllegalArgumentException | ArithmeticException exception) {
+                } catch (IllegalArgumentException | ArithmeticException exception) {
 
-                JOptionPane.showMessageDialog(
-                    this,
-                    exception.getMessage(),
-                    "Error en el cálculo",
-                    JOptionPane.ERROR_MESSAGE
-                );
-            }
+                    JOptionPane.showMessageDialog(
+                        this,
+                        exception.getMessage(),
+                        "Error en el cálculo",
+                        JOptionPane.ERROR_MESSAGE
+                    );
+                }
 
             } else if (emptyCount > 1) {
                 for (Writer.FormRelation relation : variableList) {

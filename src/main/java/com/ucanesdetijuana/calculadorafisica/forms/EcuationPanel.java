@@ -5,9 +5,9 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.ucanesdetijuana.calculadorafisica.core.logic.Ecuation;
 import com.ucanesdetijuana.calculadorafisica.core.logic.Variable;
 import java.awt.Color;
-import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import java.util.List;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
@@ -26,17 +26,20 @@ public final class EcuationPanel extends javax.swing.JPanel {
     private final EcuationViewModel model;
     private final ProcedurePanel procedures;
     private final ProcedurePanel result;
-    private final Frame parent;
+    private final Start parent;
+    
+    EditedEvent editedEvt = new EditedEvent();
     
     /**
      * Crea la instancia del panel
      * @param model Modelo de los datos a mostrar
+     * @param parent
      */
-    public EcuationPanel(EcuationViewModel model, Frame parent) {
+    public EcuationPanel(EcuationViewModel model, Start parent) {
         this.model = model;
         this.procedures = new ProcedurePanel();
         this.result = new ProcedurePanel();
-        this.parent = parent;
+        this.parent = (Start) parent;
         
         initComponents();
         
@@ -51,8 +54,87 @@ public final class EcuationPanel extends javax.swing.JPanel {
         onCreateFormulas(Formulas);
         onCreateProcedures(Procedure);
         onCreateResult(Result);
+        
+        parent.addLoadListener((equation) -> {
+            if (equation.getClass() == model.getEcuation().getClass()) { 
+                loadEcuationOnUI(equation); 
+            }
+        });
     }
     
+    /**
+     * Método para suscribirse como oyente a la edición en este panel
+     * @param listener Oyente a suscribir
+     */
+    public void suscribe (EditedListener listener) {
+        editedEvt.addEditedListener(listener);
+    }
+    
+    /**
+     * Reinicia la ecuación del ViewModel
+     */
+    public void restart () throws Exception {
+        Ecuation ec = model.getEcuation()
+                .getClass()
+                .getDeclaredConstructor()
+                .newInstance();
+        
+        model.setEcuation(ec);
+        
+        ProblemScrollPane.setVisible(false);
+        ProblemTextArea.setText("");
+
+        VariablesPanel.removeAll();
+        
+        onCreateVariables(VariablesPanel);
+        onCreateFormulas(Formulas);
+        onCreateProcedures(Procedure);
+        onCreateResult(Result);
+    }
+    
+    /**
+     * Recarga la ecuación del ViewModel en la UI
+     * @param load 
+     */
+    private void loadEcuationOnUI (Ecuation load) {        
+        if (load.getDescription().isBlank()) {
+            ProblemScrollPane.setVisible(false);
+        } else {
+            ProblemScrollPane.setVisible(true);
+            ProblemTextArea.setText(load.getDescription());
+        }
+        
+        model.setEcuation(load);
+        
+        Variable target = null;
+        boolean cancelProcedure = false;
+        
+        for (Variable variable : load.getVariables()) {
+            if (variable.getTarget()) {
+                if (target != null)  {
+                    cancelProcedure = true;
+                    break;
+                }
+                
+                target = variable;
+            }
+        }
+        
+        if (target == null) { cancelProcedure = true; }
+        
+        VariablesPanel.removeAll();
+        
+        onCreateVariables(VariablesPanel);
+        onCreateFormulas(Formulas);
+        
+        if (!cancelProcedure) {
+            double procedureResult = target.calculate();
+            target.setValue(procedureResult);
+            List<String> latex = target.getProcedureSteps();
+            
+            editContent(latex);
+        }   
+    }
     
     private void renderModelOn (JPanel localVariables, Ecuation ec) {
         localVariables.setLayout(new BoxLayout(localVariables, BoxLayout.Y_AXIS));
@@ -90,6 +172,8 @@ public final class EcuationPanel extends javax.swing.JPanel {
     public void onCreateFormulas (JPanel panel) {
         GridBagConstraints gbc = new GridBagConstraints();
         
+        panel.removeAll();
+        
         TeXFormula formula = new TeXFormula(model.getEcuation().getLatexFormula());
         TeXIcon icon = formula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 24);
         
@@ -107,6 +191,8 @@ public final class EcuationPanel extends javax.swing.JPanel {
         
         gbc.fill = GridBagConstraints.BOTH;
         gbc.anchor = GridBagConstraints.NORTH;
+        
+        gbc.insets = new Insets(15, 0, 0, 0);
         
         panel.add(label, gbc);
     }
@@ -129,6 +215,8 @@ public final class EcuationPanel extends javax.swing.JPanel {
      * @implNote El parámetro panel debe contener estrictamente un GridBayLayout
      */
     public void onCreateProcedures (JPanel panel) {
+        procedures.removeAll();
+        
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 1;
@@ -150,6 +238,8 @@ public final class EcuationPanel extends javax.swing.JPanel {
      * @implNote El parámetro panel debe contener estrictamente un GridBayLayout
      */
     public void onCreateResult (JPanel panel) {
+        result.removeAll();
+        
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 1;
@@ -163,6 +253,12 @@ public final class EcuationPanel extends javax.swing.JPanel {
         gbc.insets = new Insets(10, 20, 0, 0);
         
         panel.add(result, gbc);
+    }
+    
+    protected void editContent (List<String> latex) {
+        procedures.renderProcedure(latex);
+        result.renderProcedure(latex.getLast());
+        renderModelOn(VariablesPanel, model.getEcuation());
     }
     
     /**
@@ -385,16 +481,16 @@ public final class EcuationPanel extends javax.swing.JPanel {
         Writer w = new Writer(null, true, model);
         
         w.addCalculateListener((latex) -> {
-            procedures.renderProcedure(latex);
-            result.renderProcedure(latex.getLast());
-            renderModelOn(VariablesPanel, model.getEcuation());
+            editContent(latex);
+            
+            editedEvt.fire(true);
         });
         
         w.setVisible(true);
     }//GEN-LAST:event_EditDataMouseClicked
 
     private void EditProblemContentMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_EditProblemContentMouseClicked
-        ProblemWriter problemWriter = new ProblemWriter(null, true, model.getEcuation());                
+        ProblemWriter problemWriter = new ProblemWriter(null, true, model.getEcuation());
         
         problemWriter.subscribe((content) -> {
             this.model.getEcuation().setDescription(content);
@@ -406,6 +502,8 @@ public final class EcuationPanel extends javax.swing.JPanel {
                 ProblemTextArea.setText(content);
             }
             
+            editedEvt.fire(true);
+            
             parent.revalidate();
             parent.repaint();
         });
@@ -413,6 +511,7 @@ public final class EcuationPanel extends javax.swing.JPanel {
         problemWriter.setVisible(true);
     }//GEN-LAST:event_EditProblemContentMouseClicked
 
+    public EcuationViewModel getModel () { return model; }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel Conclusiones;

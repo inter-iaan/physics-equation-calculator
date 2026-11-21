@@ -71,12 +71,12 @@ public class Writer extends javax.swing.JDialog {
     private void processFractional (JPanel localVariable, FractionalUnit fracUnit) {
         UnitMetric[] numUnits = ConverterFactory.getAllUnits(fracUnit.getNumerator().getMagnitudeType());
         JComboBox<UnitMetric> comboNum = new JComboBox<>(new DefaultComboBoxModel<>(numUnits));
-        comboNum.setPreferredSize(new Dimension(50, 25));
+        comboNum.setPreferredSize(new Dimension(75, 25));
         comboNum.setSelectedItem(fracUnit.getNumerator());
 
         UnitMetric[] denUnits = ConverterFactory.getAllUnits(fracUnit.getDenominator().getMagnitudeType());
         JComboBox<UnitMetric> comboDen = new JComboBox<>(new DefaultComboBoxModel<>(denUnits));
-        comboDen.setPreferredSize(new Dimension(50, 25));
+        comboDen.setPreferredSize(new Dimension(75, 25));
         comboDen.setSelectedItem(fracUnit.getDenominator());
 
         comboNum.addActionListener(e -> fracUnit.setNumerator((UnitMetric) comboNum.getSelectedItem()));
@@ -98,7 +98,7 @@ public class Writer extends javax.swing.JDialog {
             magnitudes.setToolTipText("Esta es una magnitud adimensional, lo que significa que solo tiene un valor básico.");
         }
         
-        magnitudes.setPreferredSize(new Dimension(50,25));
+        magnitudes.setPreferredSize(new Dimension(75,25));
         magnitudes.setSelectedItem(unit);
 
         magnitudes.addActionListener(e -> { 
@@ -184,8 +184,13 @@ public class Writer extends javax.swing.JDialog {
                 } else {
                     try {
                         double val = Double.parseDouble(content);
-                        relation.variable.setValue(val);
-                        relation.variable.setTarget(false);
+                        if (!Double.isFinite(val)) {
+                            relation.showErr();
+                            hasErrors = true;
+                        } else {
+                            relation.variable.setValue(val);
+                            relation.variable.setTarget(false);
+                        }
                     } catch (NumberFormatException exception) {
                         relation.showErr();
                         hasErrors = true;
@@ -199,11 +204,16 @@ public class Writer extends javax.swing.JDialog {
             }
 
             if (emptyCount == 1 && emptyContent != null) {
-                try {
-                    double result = emptyContent.variable.calculate();
-
-                    emptyContent.variable.setValue(result);
-                    emptyContent.variable.setTarget(true);
+                       
+            try {
+                double result = emptyContent.variable.calculate();
+                if (!Double.isFinite(result)) {
+                    throw new IllegalArgumentException(
+                        "El resultado no es un número válido. Verifique los valores ingresados."
+                    );
+                }
+                emptyContent.variable.setValue(result);
+                emptyContent.variable.setTarget(true);
 
                     List<String> latex = emptyContent.variable.getProcedureSteps();
 
@@ -222,12 +232,27 @@ public class Writer extends javax.swing.JDialog {
                 }
 
             } else if (emptyCount > 1) {
-                for (Writer.FormRelation relation : variableList) {
-                    if (relation.field.getText().trim().isBlank()) {
-                        relation.showErr();
-                    }
-                }                
-            }
+    for (Writer.FormRelation relation : variableList) {
+        if (relation.field.getText().trim().isBlank()) {
+            relation.showErr();
+        }
+    }
+
+            JOptionPane.showMessageDialog(
+                this,
+                "Debe dejar únicamente una variable vacía para calcularla.",
+                "Campos incompletos",
+                JOptionPane.WARNING_MESSAGE
+            );
+
+        } else {
+            JOptionPane.showMessageDialog(
+                this,
+                "Debe dejar vacía la variable que desea calcular.",
+                "No se ha seleccionado una variable",
+                JOptionPane.WARNING_MESSAGE
+            );
+        }
         });
 
         gbc.gridx = 0;

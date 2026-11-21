@@ -299,6 +299,7 @@ public final class EcuationPanel extends javax.swing.JPanel {
 
         ProblemTextArea.setColumns(20);
         ProblemTextArea.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
+        ProblemTextArea.setLineWrap(true);
         ProblemTextArea.setRows(5);
         ProblemTextArea.setWrapStyleWord(true);
         ProblemTextArea.setEnabled(false);

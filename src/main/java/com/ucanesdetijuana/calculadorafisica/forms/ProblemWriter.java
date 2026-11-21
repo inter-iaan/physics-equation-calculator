@@ -82,7 +82,9 @@ public class ProblemWriter extends javax.swing.JDialog {
         ContentScroll.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 
         Content.setColumns(20);
+        Content.setLineWrap(true);
         Content.setRows(5);
+        Content.setWrapStyleWord(true);
         ContentScroll.setViewportView(Content);
         InputMap inputMap = Content.getInputMap(JComponent.WHEN_FOCUSED);
         ActionMap actionMap = Content.getActionMap();

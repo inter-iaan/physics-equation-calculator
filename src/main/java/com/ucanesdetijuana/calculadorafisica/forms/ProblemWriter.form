@@ -103,7 +103,9 @@
         <Component class="javax.swing.JTextArea" name="Content">
           <Properties>
             <Property name="columns" type="int" value="20"/>
+            <Property name="lineWrap" type="boolean" value="true"/>
             <Property name="rows" type="int" value="5"/>
+            <Property name="wrapStyleWord" type="boolean" value="true"/>
           </Properties>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="InputMap inputMap = Content.getInputMap(JComponent.WHEN_FOCUSED);&#xa;ActionMap actionMap = Content.getActionMap();&#xa;inputMap.put(KeyStroke.getKeyStroke(&quot;ENTER&quot;), &quot;enviarTexto&quot;);&#xa;inputMap.put(KeyStroke.getKeyStroke(&quot;shift ENTER&quot;), &quot;insert-break&quot;);&#xa;&#xa;actionMap.put(&quot;enviarTexto&quot;, new AbstractAction() {&#xa;    @Override&#xa;    public void actionPerformed(ActionEvent e) { sentContent(); }&#xa;});"/>

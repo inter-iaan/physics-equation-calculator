@@ -126,7 +126,7 @@ public class Writer extends javax.swing.JDialog {
             JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
             JPanel body = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 5));
             
-            JLabel error = new JLabel("Por favor. Verifique la entrada.");
+            JLabel error = new JLabel("Por favor. Verifique la entrada. Únicamente se aceptan números.");
             error.setForeground(Color.red);
             error.setVisible(false);
             

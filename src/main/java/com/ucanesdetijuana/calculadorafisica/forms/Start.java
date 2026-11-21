@@ -71,7 +71,7 @@ public class Start extends javax.swing.JFrame {
                 Close.setVisible(false);
             }
             case FILE_EDITED -> {
-                this.setTitle("Calculadora para Ecuaciones Físicas - " + opened.getName() + " *");
+                if (opened != null) this.setTitle("Calculadora para Ecuaciones Físicas - " + opened.getName() + " *");
             }
             case FILE_OPEN -> {
                 this.setTitle("Calculadora para Ecuaciones Físicas - " + opened.getName());
@@ -392,18 +392,25 @@ public class Start extends javax.swing.JFrame {
         
         JFileChooser chooser = new JFileChooser();
         chooser.setDialogTitle("Guardar ecuación como...");
-        
         chooser.setSelectedFile(new File("Ecuacion " + now.toString() + ".equ"));
-        
+
         chooser.setAcceptAllFileFilterUsed(false);
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos de ecuación (*.equ)", "equ");
         chooser.setFileFilter(filter);
 
         int result = chooser.showSaveDialog(this);
+
         if (result == JFileChooser.APPROVE_OPTION) {
-            this.opened = chooser.getSelectedFile();
-            Storage.write(currentPanel.getModel().getEcuation(),this.opened);
-            
+            File selectedFile = chooser.getSelectedFile();
+
+            if (!selectedFile.getName().toLowerCase().endsWith(".equ")) {
+                selectedFile = new File(selectedFile.getParentFile(), selectedFile.getName() + ".equ");
+            }
+
+            this.opened = selectedFile;
+
+            Storage.write(currentPanel.getModel().getEcuation(), this.opened);
+
             try {
                 int selectedIndex = EcuationHardCoded.parseIndex(currentPanel.getModel().getEcuation());
                 disableTabsExcept(selectedIndex);
@@ -411,7 +418,7 @@ public class Start extends javax.swing.JFrame {
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, ex.getMessage() + "\nPosiblemente el archivo esté corrupto o ilegible.", "Advertencia", JOptionPane.WARNING_MESSAGE);
             }
-            
+
             setState(AplicationStatus.FILE_OPEN);
         }
     }//GEN-LAST:event_SaveAsActionPerformed
@@ -439,6 +446,7 @@ public class Start extends javax.swing.JFrame {
         }
         
         refresh();
+        opened = null;
         setState(AplicationStatus.NOTHING_OPEN); 
     }//GEN-LAST:event_CloseActionPerformed
 

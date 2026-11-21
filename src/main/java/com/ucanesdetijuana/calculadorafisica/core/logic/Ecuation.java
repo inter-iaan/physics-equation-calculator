@@ -1,12 +1,13 @@
 package com.ucanesdetijuana.calculadorafisica.core.logic;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * 
  * @author José Alfredo Interián Polanco
  */
-public class Ecuation {
+public class Ecuation implements Serializable {
     private final String name;
     private final String latexFormula;
     private String problemDescription = "";

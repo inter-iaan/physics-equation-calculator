@@ -1,11 +1,13 @@
 package com.ucanesdetijuana.calculadorafisica.core.convertions;
 
+import java.io.Serializable;
+
 /**
  *
  * @author José Alfredo Interián Polanco
  * Comportamiento general de las unidades con respecto a su contenido.
  */
-public interface UnitMetric {
+public interface UnitMetric extends Serializable {
     /**
      * Obtiene el nombre completo de la unidad
      * Ejemplo: Metro

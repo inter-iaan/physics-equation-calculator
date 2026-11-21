@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public class EcuationViewModel {
-    private final Ecuation baseEcuation;
+    private Ecuation baseEcuation;
     
     private Consumer<List<String>> onProcedureGenerated;
     
@@ -41,7 +41,6 @@ public class EcuationViewModel {
         int emptyCount = 0;
         boolean hasParseError = false;
 
-        // FASE 1: Parsear e inyectar valores en el Modelo
         for (Variable var : baseEcuation.getVariables()) {
             String content = inputs.getOrDefault(var.getName(), "").trim();
 
@@ -91,5 +90,9 @@ public class EcuationViewModel {
 
     public Ecuation getEcuation() {
         return baseEcuation;
+    }
+    
+    public void setEcuation (Ecuation ec) {
+        this.baseEcuation = ec;
     }
 }

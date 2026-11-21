@@ -1,9 +1,14 @@
 package com.ucanesdetijuana.calculadorafisica.forms;
 
-import com.ucanesdetijuana.calculadorafisica.modules.MRU;
-import com.ucanesdetijuana.calculadorafisica.modules.SLNewton;
+import com.ucanesdetijuana.calculadorafisica.EcuationHardCoded;
+import com.ucanesdetijuana.calculadorafisica.core.logic.Ecuation;
+import com.ucanesdetijuana.calculadorafisica.core.storage.Storage;
+import java.io.File;
+import java.time.LocalDate;
 import java.util.List;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
@@ -11,22 +16,113 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  * @author José Alfredo Interián Polanco
  */
 public class Start extends javax.swing.JFrame {
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Start.class.getName());
     List<EcuationViewModel> equationModels;
-
+    private static Start instance;
+    private EcuationPanel currentPanel;
+    private AplicationStatus currentStatus = AplicationStatus.NOTHING_OPEN;
+    private File opened = null;
+    
+    LoadEcuationEvent loadEvt = new LoadEcuationEvent();
+    
+    public static Start getInstance () {
+        if (instance == null) {
+            instance = new Start(EcuationHardCoded.getModels());
+        }
+        
+        return instance;
+    }
+    
     /**
      * Inicia en este método todos los tipos de ecuaciones que se deban mostrar, inicialízala con un EcuationViewModel y pásale como parámetro la instancia heredada.
      * @param models Lista de ViewModels a cargar como pestañas
      */
-    public Start(List<EcuationViewModel> models) {
+    private Start(List<EcuationViewModel> models) {
         initComponents();
         equationModels = models;
         
         equationModels.forEach((model) -> {
-            EcuationTabbedPane.addTab(model.getEcuation().getName(), new EcuationPanel(model, this));
+            EcuationPanel panel = new EcuationPanel(model, this);
+            panel.suscribe((isEdited) -> {
+                if (isEdited) {
+                    setState(AplicationStatus.FILE_EDITED);
+                }
+            });
+            EcuationTabbedPane.addTab(model.getEcuation().getName(), panel);
         });
+        
+        currentPanel = (EcuationPanel) EcuationTabbedPane.getComponentAt(0);
+        
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
-
+    
+    private void setState (AplicationStatus status) {
+        currentStatus = status;
+        
+        switch (status) {
+            case NOTHING_OPEN -> {
+                this.setTitle("Calculadora para Ecuaciones Físicas");
+                enableTabs();
+                SaveAs.setVisible(true);
+                
+                Open.setEnabled(true);
+                Open.setToolTipText("");
+                
+                Save.setVisible(false);
+                Close.setVisible(false);
+            }
+            case FILE_EDITED -> {
+                this.setTitle("Calculadora para Ecuaciones Físicas - " + opened.getName() + " *");
+            }
+            case FILE_OPEN -> {
+                this.setTitle("Calculadora para Ecuaciones Físicas - " + opened.getName());
+                Save.setVisible(true);
+                Close.setVisible(true);
+                SaveAs.setVisible(false);
+                Open.setEnabled(false);
+                Open.setToolTipText("Cerra primero la ecuación actualmente abierta...");
+            }
+                
+            
+            default -> { throw new AssertionError(); }
+        }
+    }
+    
+    /**
+     * Habilita todas las pestañas de la aplicación
+     */
+    private void enableTabs () {
+        for (int i = 0; i < EcuationHardCoded.getModels().size(); i++) {
+            EcuationTabbedPane.setEnabledAt(i, (true));
+        }
+    }
+    
+    /**
+     * Deshabilita todas las pestañas a excepción de la que tenga el índice enviado
+     * @param index Índice de la pestaña a dejar activa
+     */
+    private void disableTabsExcept (int index) {
+        EcuationTabbedPane.setSelectedIndex(index);
+        for (int i = 0; i < EcuationHardCoded.getModels().size(); i++) {
+            EcuationTabbedPane.setEnabledAt(i, (index == i));
+        }
+    }
+    
+    /**
+     * Reinicia el estado de renderizado de la pantalla actual.
+     */
+    public void refresh () {        
+        try {
+            EcuationPanel panel = (EcuationPanel) EcuationTabbedPane.getSelectedComponent();
+            panel.restart();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "No se pudo reiniciar correctamente la vista. Intente nuevamente...", "Advertencia", JOptionPane.WARNING_MESSAGE);
+        }
+    }   
+    
+    public void addLoadListener (LoadListener listener) {
+        loadEvt.addListener(listener);
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -51,19 +147,24 @@ public class Start extends javax.swing.JFrame {
         jLabel12 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
+        jLabel15 = new javax.swing.JLabel();
         Title = new javax.swing.JLabel();
         EcuationTabbedPane = new javax.swing.JTabbedPane();
         CreditLabel = new javax.swing.JLabel();
         EquationMenuBar = new javax.swing.JMenuBar();
         File = new javax.swing.JMenu();
         Open = new javax.swing.JMenuItem();
+        SaveAs = new javax.swing.JMenuItem();
         Save = new javax.swing.JMenuItem();
+        Close = new javax.swing.JMenuItem();
+        jMenu1 = new javax.swing.JMenu();
+        About = new javax.swing.JMenuItem();
 
-        Credits.setTitle("Créditos - Calculadora para Ecuaciones Físicas");
+        Credits.setTitle("Acerca de - Calculadora para Ecuaciones Físicas");
 
         jLabel1.setFont(new java.awt.Font("Segoe UI Variable", 1, 24)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Créditos");
+        jLabel1.setText("Acerca de");
 
         jLabel2.setFont(new java.awt.Font("Segoe UI Variable", 0, 14)); // NOI18N
         jLabel2.setText("SCF100603A · Física General");
@@ -73,7 +174,7 @@ public class Start extends javax.swing.JFrame {
         jLabel3.setText("Ing. David Nochebuena González");
 
         jLabel4.setFont(new java.awt.Font("Segoe UI Semilight", 0, 14)); // NOI18N
-        jLabel4.setText("Programación, Desarrollo de Interfaz Gráfica y Clases Abstractas");
+        jLabel4.setText("Desarrollo de Interfaz Gráfica, Clases Abstractas y Almacenamiento Persistente");
 
         jLabel5.setFont(new java.awt.Font("Segoe UI Variable", 1, 16)); // NOI18N
         jLabel5.setText("Téc. Emanuel Alejandro Juárez López");
@@ -105,13 +206,18 @@ public class Start extends javax.swing.JFrame {
         jLabel14.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel14.setText("Instituto Tecnológico de Cancún (2026)");
 
+        jLabel15.setFont(new java.awt.Font("Segoe UI Semilight", 0, 14)); // NOI18N
+
         javax.swing.GroupLayout CreditsLayout = new javax.swing.GroupLayout(Credits.getContentPane());
         Credits.getContentPane().setLayout(CreditsLayout);
         CreditsLayout.setHorizontalGroup(
             CreditsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(CreditsLayout.createSequentialGroup()
-                .addGap(9, 9, 9)
+                .addGap(12, 12, 12)
                 .addGroup(CreditsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(CreditsLayout.createSequentialGroup()
+                        .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, CreditsLayout.createSequentialGroup()
@@ -122,13 +228,9 @@ public class Start extends javax.swing.JFrame {
                                 .addComponent(jLabel2)))
                         .addGap(21, 21, 21))
                     .addGroup(CreditsLayout.createSequentialGroup()
-                        .addComponent(jLabel11)
-                        .addContainerGap())
-                    .addGroup(CreditsLayout.createSequentialGroup()
-                        .addComponent(jLabel7)
-                        .addContainerGap())
-                    .addGroup(CreditsLayout.createSequentialGroup()
                         .addGroup(CreditsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel11)
+                            .addComponent(jLabel7)
                             .addGroup(CreditsLayout.createSequentialGroup()
                                 .addComponent(jLabel6)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -142,7 +244,7 @@ public class Start extends javax.swing.JFrame {
                                 .addGap(12, 12, 12)
                                 .addComponent(jLabel8))
                             .addComponent(jLabel4))
-                        .addContainerGap())))
+                        .addContainerGap(12, Short.MAX_VALUE))))
         );
         CreditsLayout.setVerticalGroup(
             CreditsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -151,7 +253,9 @@ public class Start extends javax.swing.JFrame {
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel4)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(4, 4, 4)
+                .addComponent(jLabel15)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel8)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -178,41 +282,56 @@ public class Start extends javax.swing.JFrame {
                 .addGap(12, 12, 12))
         );
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Calculadora para Ecuaciones Físicas");
         setMinimumSize(new java.awt.Dimension(1280, 720));
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         Title.setFont(new java.awt.Font("Segoe UI Semibold", 0, 24)); // NOI18N
         Title.setText("Calculadora para Ecuaciones Físicas");
 
+        EcuationTabbedPane.addChangeListener(this::EcuationTabbedPaneStateChanged);
+
         CreditLabel.setFont(new java.awt.Font("Segoe UI Semilight", 0, 14)); // NOI18N
         CreditLabel.setText("SCF100603A · Física General · Instituto Tecnológico de Cancún");
-        CreditLabel.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                CreditLabelMouseClicked(evt);
-            }
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                CreditLabelMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                CreditLabelMouseExited(evt);
-            }
-        });
 
         File.setText("Archivo");
-        File.addActionListener(this::FileActionPerformed);
 
         Open.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         Open.setText("Abrir ecuación...");
         Open.addActionListener(this::OpenActionPerformed);
         File.add(Open);
 
+        SaveAs.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.SHIFT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        SaveAs.setText("Guardar ecuación...");
+        SaveAs.addActionListener(this::SaveAsActionPerformed);
+        File.add(SaveAs);
+
         Save.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        Save.setText("Guardar ecuación...");
+        Save.setText("Guardar");
         Save.addActionListener(this::SaveActionPerformed);
         File.add(Save);
+        Save.setVisible(false);
+
+        Close.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        Close.setText("Cerrar");
+        Close.addActionListener(this::CloseActionPerformed);
+        File.add(Close);
+        Close.setVisible(false);
 
         EquationMenuBar.add(File);
+
+        jMenu1.setText("Ayuda");
+
+        About.setText("Acerca de");
+        About.addActionListener(this::AboutActionPerformed);
+        jMenu1.add(About);
+
+        EquationMenuBar.add(jMenu1);
 
         setJMenuBar(EquationMenuBar);
 
@@ -246,26 +365,6 @@ public class Start extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void CreditLabelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_CreditLabelMouseEntered
-        CreditLabel.setText("<html><u>SCF100603A · Física General · Instituto Tecnológico de Cancún</u></html>");
-    }//GEN-LAST:event_CreditLabelMouseEntered
-
-    private void CreditLabelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_CreditLabelMouseExited
-        CreditLabel.setText("SCF100603A · Física General · Instituto Tecnológico de Cancún");
-    }//GEN-LAST:event_CreditLabelMouseExited
-
-    private void CreditLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_CreditLabelMouseClicked
-        Credits.pack();
-        Credits.setLocationRelativeTo(this);
-        Credits.setResizable(false);
-        Credits.setVisible(true);
-        
-    }//GEN-LAST:event_CreditLabelMouseClicked
-
-    private void FileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_FileActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_FileActionPerformed
-
     private void OpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OpenActionPerformed
         JFileChooser chooser = new JFileChooser();
         chooser.setDialogTitle("Abrir ecuación...");
@@ -275,24 +374,95 @@ public class Start extends javax.swing.JFrame {
 
         int result = chooser.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
-            System.out.println("Archivo seleccionado!!");
+            this.opened = chooser.getSelectedFile();
+            Ecuation load = Storage.read(this.opened);
+            try {
+                int selectedIndex = EcuationHardCoded.parseIndex(load);
+                disableTabsExcept(selectedIndex);
+                setState(AplicationStatus.FILE_OPEN);
+                loadEvt.fireContent(load);     
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage() + "\nPosiblemente el archivo esté corrupto o ilegible.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            }
         }
     }//GEN-LAST:event_OpenActionPerformed
 
-    private void SaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveActionPerformed
+    private void SaveAsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveAsActionPerformed
+        LocalDate now = LocalDate.now();
+        
         JFileChooser chooser = new JFileChooser();
-        chooser.setDialogTitle("Abrir ecuación...");
+        chooser.setDialogTitle("Guardar ecuación como...");
+        
+        chooser.setSelectedFile(new File("Ecuacion " + now.toString() + ".equ"));
+        
         chooser.setAcceptAllFileFilterUsed(false);
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos de ecuación (*.equ)", "equ");
         chooser.setFileFilter(filter);
 
-        int result = chooser.showOpenDialog(this);
+        int result = chooser.showSaveDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
-            System.out.println("Archivo seleccionado!!");
+            this.opened = chooser.getSelectedFile();
+            Storage.write(currentPanel.getModel().getEcuation(),this.opened);
+            
+            try {
+                int selectedIndex = EcuationHardCoded.parseIndex(currentPanel.getModel().getEcuation());
+                disableTabsExcept(selectedIndex);
+                setState(AplicationStatus.FILE_OPEN);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage() + "\nPosiblemente el archivo esté corrupto o ilegible.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            }
+            
+            setState(AplicationStatus.FILE_OPEN);
+        }
+    }//GEN-LAST:event_SaveAsActionPerformed
+
+    private void EcuationTabbedPaneStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_EcuationTabbedPaneStateChanged
+        currentPanel = (EcuationPanel) EcuationTabbedPane.getSelectedComponent();
+    }//GEN-LAST:event_EcuationTabbedPaneStateChanged
+
+    private void AboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AboutActionPerformed
+        Credits.pack();
+        Credits.setLocationRelativeTo(this);
+        Credits.setResizable(false);
+        Credits.setVisible(true);
+    }//GEN-LAST:event_AboutActionPerformed
+
+    private void CloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CloseActionPerformed
+        if (currentStatus == AplicationStatus.FILE_EDITED) {
+            int option = JOptionPane.showConfirmDialog(this, "¿Desea guardar los cambios antes de cerrar?", "Confirmación", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+            
+            if (option == JOptionPane.YES_OPTION) { 
+                Storage.write(currentPanel.getModel().getEcuation(), opened);
+            } else if (option == JOptionPane.CANCEL_OPTION) {
+                return;
+            }
+        }
+        
+        refresh();
+        setState(AplicationStatus.NOTHING_OPEN); 
+    }//GEN-LAST:event_CloseActionPerformed
+
+    private void SaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveActionPerformed
+        int option = JOptionPane.showConfirmDialog(this, "¿Desea guardar los cambios en este archivo?", "Confirmación", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
+        if (option == JOptionPane.YES_OPTION) {
+            setState(AplicationStatus.FILE_OPEN);
+            Storage.write(currentPanel.getModel().getEcuation(), opened);
         }
     }//GEN-LAST:event_SaveActionPerformed
 
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        if (currentStatus == AplicationStatus.FILE_EDITED) {
+            int option = JOptionPane.showConfirmDialog(this, "¿Desea guardar los cambios en este archivo?", "Confirmación", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
+            if (option == JOptionPane.YES_OPTION)
+                Storage.write(currentPanel.getModel().getEcuation(), opened);
+        }
+        
+        this.dispose();
+    }//GEN-LAST:event_formWindowClosing
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem About;
+    private javax.swing.JMenuItem Close;
     private javax.swing.JLabel CreditLabel;
     private javax.swing.JDialog Credits;
     private javax.swing.JTabbedPane EcuationTabbedPane;
@@ -300,6 +470,7 @@ public class Start extends javax.swing.JFrame {
     private javax.swing.JMenu File;
     private javax.swing.JMenuItem Open;
     private javax.swing.JMenuItem Save;
+    private javax.swing.JMenuItem SaveAs;
     private javax.swing.JLabel Title;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
@@ -307,6 +478,7 @@ public class Start extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -315,5 +487,6 @@ public class Start extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JMenu jMenu1;
     // End of variables declaration//GEN-END:variables
 }

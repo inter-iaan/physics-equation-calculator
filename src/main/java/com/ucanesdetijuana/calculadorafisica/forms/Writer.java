@@ -3,7 +3,6 @@ package com.ucanesdetijuana.calculadorafisica.forms;
 import com.ucanesdetijuana.calculadorafisica.core.convertions.ConverterFactory;
 import com.ucanesdetijuana.calculadorafisica.core.convertions.FractionalUnit;
 import com.ucanesdetijuana.calculadorafisica.core.convertions.UnitMetric;
-import com.ucanesdetijuana.calculadorafisica.core.logic.Ecuation;
 import com.ucanesdetijuana.calculadorafisica.core.logic.Variable;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -17,13 +16,13 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import org.scilab.forge.jlatexmath.TeXConstants;
 import org.scilab.forge.jlatexmath.TeXFormula;
 import org.scilab.forge.jlatexmath.TeXIcon;
 import com.ucanesdetijuana.calculadorafisica.core.convertions.DimensionlessUnit;
+import javax.swing.JOptionPane;
 /**
  *
  * @author José Alfredo Interián Polanco
@@ -72,12 +71,12 @@ public class Writer extends javax.swing.JDialog {
     private void processFractional (JPanel localVariable, FractionalUnit fracUnit) {
         UnitMetric[] numUnits = ConverterFactory.getAllUnits(fracUnit.getNumerator().getMagnitudeType());
         JComboBox<UnitMetric> comboNum = new JComboBox<>(new DefaultComboBoxModel<>(numUnits));
-        comboNum.setPreferredSize(new Dimension(50, 25));
+        comboNum.setPreferredSize(new Dimension(75, 25));
         comboNum.setSelectedItem(fracUnit.getNumerator());
 
         UnitMetric[] denUnits = ConverterFactory.getAllUnits(fracUnit.getDenominator().getMagnitudeType());
         JComboBox<UnitMetric> comboDen = new JComboBox<>(new DefaultComboBoxModel<>(denUnits));
-        comboDen.setPreferredSize(new Dimension(50, 25));
+        comboDen.setPreferredSize(new Dimension(75, 25));
         comboDen.setSelectedItem(fracUnit.getDenominator());
 
         comboNum.addActionListener(e -> fracUnit.setNumerator((UnitMetric) comboNum.getSelectedItem()));
@@ -99,7 +98,7 @@ public class Writer extends javax.swing.JDialog {
             magnitudes.setToolTipText("Esta es una magnitud adimensional, lo que significa que solo tiene un valor básico.");
         }
         
-        magnitudes.setPreferredSize(new Dimension(50,25));
+        magnitudes.setPreferredSize(new Dimension(75,25));
         magnitudes.setSelectedItem(unit);
 
         magnitudes.addActionListener(e -> { 
@@ -205,10 +204,7 @@ public class Writer extends javax.swing.JDialog {
             }
 
             if (emptyCount == 1 && emptyContent != null) {
-                Ecuation preCalc = this.model.getEcuation();
-                
-                
-                
+                       
             try {
                 double result = emptyContent.variable.calculate();
                 if (!Double.isFinite(result)) {
@@ -219,21 +215,21 @@ public class Writer extends javax.swing.JDialog {
                 emptyContent.variable.setValue(result);
                 emptyContent.variable.setTarget(true);
 
-                List<String> latex = emptyContent.variable.getProcedureSteps();
+                    List<String> latex = emptyContent.variable.getProcedureSteps();
 
-                calcEvt.fireContent(latex);
+                    calcEvt.fireContent(latex);
 
-                this.dispose();
+                    this.dispose();
 
-            } catch (IllegalArgumentException | ArithmeticException exception) {
+                } catch (IllegalArgumentException | ArithmeticException exception) {
 
-                JOptionPane.showMessageDialog(
-                    this,
-                    exception.getMessage(),
-                    "Error en el cálculo",
-                    JOptionPane.ERROR_MESSAGE
-                );
-            }
+                    JOptionPane.showMessageDialog(
+                        this,
+                        exception.getMessage(),
+                        "Error en el cálculo",
+                        JOptionPane.ERROR_MESSAGE
+                    );
+                }
 
             } else if (emptyCount > 1) {
     for (Writer.FormRelation relation : variableList) {

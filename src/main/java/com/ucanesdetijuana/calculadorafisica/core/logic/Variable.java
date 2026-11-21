@@ -1,5 +1,6 @@
 package com.ucanesdetijuana.calculadorafisica.core.logic;
 import com.ucanesdetijuana.calculadorafisica.core.convertions.UnitMetric;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +9,7 @@ import java.util.List;
  * Define las características comunes de una variable del sistema
  */
 
-public abstract class Variable implements Calculator {
+public abstract class Variable implements Calculator, Serializable {
     private final String name;
     private final String abr;
     private Double value;

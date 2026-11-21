@@ -90,6 +90,10 @@
       </Properties>
     </Component>
     <Container class="javax.swing.JScrollPane" name="ContentScroll">
+      <Properties>
+        <Property name="horizontalScrollBarPolicy" type="int" value="31"/>
+        <Property name="verticalScrollBarPolicy" type="int" value="21"/>
+      </Properties>
       <AuxValues>
         <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
       </AuxValues>
@@ -103,6 +107,7 @@
           </Properties>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="InputMap inputMap = Content.getInputMap(JComponent.WHEN_FOCUSED);&#xa;ActionMap actionMap = Content.getActionMap();&#xa;inputMap.put(KeyStroke.getKeyStroke(&quot;ENTER&quot;), &quot;enviarTexto&quot;);&#xa;inputMap.put(KeyStroke.getKeyStroke(&quot;shift ENTER&quot;), &quot;insert-break&quot;);&#xa;&#xa;actionMap.put(&quot;enviarTexto&quot;, new AbstractAction() {&#xa;    @Override&#xa;    public void actionPerformed(ActionEvent e) { sentContent(); }&#xa;});"/>
+            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTextArea(ecuation.getDescription())"/>
           </AuxValues>
         </Component>
       </SubComponents>

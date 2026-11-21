@@ -1,12 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JDialog.java to edit this template
- */
 package com.ucanesdetijuana.calculadorafisica.forms;
 
 import com.ucanesdetijuana.calculadorafisica.core.logic.Ecuation;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
@@ -69,7 +64,7 @@ public class ProblemWriter extends javax.swing.JDialog {
         Title = new javax.swing.JLabel();
         Subtitle = new javax.swing.JLabel();
         ContentScroll = new javax.swing.JScrollPane();
-        Content = new javax.swing.JTextArea();
+        Content = new javax.swing.JTextArea(ecuation.getDescription());
         Accept = new javax.swing.JButton();
         Cancel = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
@@ -82,6 +77,9 @@ public class ProblemWriter extends javax.swing.JDialog {
         Title.setText("Editando descripción...");
 
         Subtitle.setText("Añada una descripción al problema planteado.");
+
+        ContentScroll.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        ContentScroll.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 
         Content.setColumns(20);
         Content.setRows(5);

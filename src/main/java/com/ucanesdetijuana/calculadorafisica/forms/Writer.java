@@ -24,7 +24,6 @@ import org.scilab.forge.jlatexmath.TeXConstants;
 import org.scilab.forge.jlatexmath.TeXFormula;
 import org.scilab.forge.jlatexmath.TeXIcon;
 import com.ucanesdetijuana.calculadorafisica.core.convertions.DimensionlessUnit;
-import javax.swing.JOptionPane;
 /**
  *
  * @author José Alfredo Interián Polanco
@@ -186,8 +185,13 @@ public class Writer extends javax.swing.JDialog {
                 } else {
                     try {
                         double val = Double.parseDouble(content);
-                        relation.variable.setValue(val);
-                        relation.variable.setTarget(false);
+                        if (!Double.isFinite(val)) {
+                            relation.showErr();
+                            hasErrors = true;
+                        } else {
+                            relation.variable.setValue(val);
+                            relation.variable.setTarget(false);
+                        }
                     } catch (NumberFormatException exception) {
                         relation.showErr();
                         hasErrors = true;
@@ -207,7 +211,11 @@ public class Writer extends javax.swing.JDialog {
                 
             try {
                 double result = emptyContent.variable.calculate();
-
+                if (!Double.isFinite(result)) {
+                    throw new IllegalArgumentException(
+                        "El resultado no es un número válido. Verifique los valores ingresados."
+                    );
+                }
                 emptyContent.variable.setValue(result);
                 emptyContent.variable.setTarget(true);
 
@@ -228,12 +236,27 @@ public class Writer extends javax.swing.JDialog {
             }
 
             } else if (emptyCount > 1) {
-                for (Writer.FormRelation relation : variableList) {
-                    if (relation.field.getText().trim().isBlank()) {
-                        relation.showErr();
-                    }
-                }                
-            }
+    for (Writer.FormRelation relation : variableList) {
+        if (relation.field.getText().trim().isBlank()) {
+            relation.showErr();
+        }
+    }
+
+            JOptionPane.showMessageDialog(
+                this,
+                "Debe dejar únicamente una variable vacía para calcularla.",
+                "Campos incompletos",
+                JOptionPane.WARNING_MESSAGE
+            );
+
+        } else {
+            JOptionPane.showMessageDialog(
+                this,
+                "Debe dejar vacía la variable que desea calcular.",
+                "No se ha seleccionado una variable",
+                JOptionPane.WARNING_MESSAGE
+            );
+        }
         });
 
         gbc.gridx = 0;
